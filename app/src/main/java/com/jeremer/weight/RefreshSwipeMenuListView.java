@@ -78,6 +78,7 @@ public class RefreshSwipeMenuListView extends ListView implements OnScrollListen
 	private final static int SCROLL_DURATION = 400;
 	private final static int PULL_LOAD_MORE_DELTA = 50;
 	private final static float OFFSET_RADIO = 1.8f;
+	private boolean isFooterVisible=false;
 
 	public RefreshSwipeMenuListView(Context context) {
 		super(context);
@@ -244,7 +245,7 @@ public class RefreshSwipeMenuListView extends ListView implements OnScrollListen
 			break;
 		case MotionEvent.ACTION_UP:
 			mLastY = -1; // reset
-			if (mEnablePullLoad && mFooterView.getHeight()>0 && mFooterView.getBottomMargin() > PULL_LOAD_MORE_DELTA) {
+			if (isFooterVisible&&mEnablePullLoad && mFooterView.getHeight()>0 && mFooterView.getBottomMargin() > PULL_LOAD_MORE_DELTA) {
 				startLoadMore();
 				resetFooterHeight();
 				new ResetHeaderHeightTask().execute();
@@ -460,7 +461,9 @@ public class RefreshSwipeMenuListView extends ListView implements OnScrollListen
 			}
 		}
 		mFooterView.setBottomMargin(height);
-
+		if(height>=200){
+			resetFooterHeight();
+		}
 		// setSelection(mTotalItemCount - 1); // scroll to bottom
 	}
 
@@ -514,6 +517,11 @@ public class RefreshSwipeMenuListView extends ListView implements OnScrollListen
 		mTotalItemCount = totalItemCount;
 		if (mScrollListener != null) {
 			mScrollListener.onScroll(view, firstVisibleItem, visibleItemCount, totalItemCount);
+		}
+		if(firstVisibleItem+visibleItemCount>=totalItemCount){
+			isFooterVisible=true;
+		}else{
+			isFooterVisible=false;
 		}
 	}
 
